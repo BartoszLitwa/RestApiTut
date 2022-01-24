@@ -55,7 +55,7 @@ namespace TweetBook.Controllers.V1
         }
 
         [HttpPut(ApiRoutes.Posts.Update)]
-        public IActionResult Get([FromRoute] Guid postId, [FromBody] UpdatePostRequest request)
+        public IActionResult Update([FromRoute] Guid postId, [FromBody] UpdatePostRequest request)
         {
             // Return Only one elemetn
             var post = new Post
@@ -69,6 +69,17 @@ namespace TweetBook.Controllers.V1
                 return NotFound();
 
             return Ok(post);
+        }
+
+        [HttpDelete(ApiRoutes.Posts.Delete)]
+        public IActionResult Delete([FromRoute] Guid postId)
+        {
+            var delete = _postService.DeletePost(postId);
+
+            if (delete)
+                return NoContent();
+
+            return NotFound();
         }
     }
 }
