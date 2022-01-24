@@ -10,6 +10,8 @@
             public const string GetAll = $"{Api}/posts";
             public const string Create = $"{Api}/posts";
             public const string Get = $"{Api}/posts/{{postId}}";
+            public const string Update = $"{Api}/posts/{{postId}}";
+            public const string Delete = $"{Api}/posts/{{postId}}";
         }
     }
 }

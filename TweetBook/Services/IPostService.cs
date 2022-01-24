@@ -9,5 +9,6 @@ namespace TweetBook.Services
         List<Post> GetPosts();
         Post GetPostById(Guid id);
         void AddPost(Post post);
+        bool UpdatePost(Post postToUpdate);
     }
 }
