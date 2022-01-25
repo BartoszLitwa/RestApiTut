@@ -19,7 +19,8 @@ namespace TweetBook.Installers
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<DataContext>();
 
-            services.AddScoped<IPostService, PostService>();
+            //services.AddScoped<IPostService, PostService>();
+            services.AddSingleton<IPostService, CosmosPostService>();
         }
     }
 }
