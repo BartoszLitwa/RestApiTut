@@ -40,6 +40,14 @@ namespace TweetBook
                 app.UseHsts();
             }
 
+            app.UseHttpsRedirection();
+            app.UseStaticFiles();
+
+            app.UseRouting();
+
+            // It has to be between the UseRouting and UseEndpoints
+            app.UseAuthorization();
+
             var swaggerOptions = new SwaggerOptions();
             Configuration.GetSection(nameof(SwaggerOptions)).Bind(swaggerOptions);
 
@@ -52,11 +60,6 @@ namespace TweetBook
             {
                 option.SwaggerEndpoint(swaggerOptions.UIEndpoint, swaggerOptions.Description);
             });
-
-            app.UseHttpsRedirection();
-            app.UseStaticFiles();
-
-            app.UseRouting();
 
 
             app.UseEndpoints(endpoints =>

@@ -13,5 +13,11 @@
             public const string Update = $"{Api}/posts/{{postId}}";
             public const string Delete = $"{Api}/posts/{{postId}}";
         }
+
+        public static class Identity
+        {
+            public const string Login = $"{Api}/identity/login";
+            public const string Register = $"{Api}/identity/register";
+        }
     }
 }
