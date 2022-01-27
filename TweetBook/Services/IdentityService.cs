@@ -23,11 +23,40 @@ namespace TweetBook.Services
             _jwtSettings = jwtSettings;
         }
 
+        public async Task<AuthenticationResult> LoginAsync(string email, string password)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+
+            if (user == null)
+                return new AuthenticationResult
+                {
+                    Errors = new[]
+                    {
+                        "User with this email does not exist"
+                    }
+                };
+
+            var userHasValidPassword = await _userManager.CheckPasswordAsync(user, password);
+
+            if(!userHasValidPassword)
+            {
+                return new AuthenticationResult
+                {
+                    Errors = new[]
+                    {
+                        "User with this email and password does not exist"
+                    }
+                };
+            }
+
+            return GenereateAuthenticationResultForUser(user);
+        }
+
         public async Task<AuthenticationResult> RegisterAsync(string Email, string Password)
         {
-            var existing = await _userManager.FindByEmailAsync(Email);
+            var userExisting = await _userManager.FindByEmailAsync(Email);
 
-            if (existing != null)
+            if (userExisting != null)
                 return new AuthenticationResult
                 {
                     Errors = new[]
@@ -36,8 +65,8 @@ namespace TweetBook.Services
                     }
                 };
 
-            var newUser = new IdentityUser 
-            { 
+            var newUser = new IdentityUser
+            {
                 Email = Email,
                 UserName = Email,
             };
@@ -49,7 +78,11 @@ namespace TweetBook.Services
                 {
                     Errors = createdUser.Errors.Select(x => x.Description),
                 };
+            return GenereateAuthenticationResultForUser(newUser);
+        }
 
+        private AuthenticationResult GenereateAuthenticationResultForUser(IdentityUser newUser)
+        {
             var tokenHandler = new JwtSecurityTokenHandler();
 
             var tokenDescriptor = new SecurityTokenDescriptor
