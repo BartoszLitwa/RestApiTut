@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using TweetBook.Contracts.V1;
 using TweetBook.Contracts.V1.Request;
 using TweetBook.Contracts.V1.Responses;
+using TweetBook.Domain;
 using TweetBook.Services;
 
 namespace TweetBook.Controllers.V1
@@ -32,18 +33,7 @@ namespace TweetBook.Controllers.V1
 
             var authResponse = await _identityService.RegisterAsync(request.Email, request.Password);
 
-            if (!authResponse.Success)
-            {
-                return BadRequest(new AuthFailedResponse
-                {
-                    Errors = authResponse.Errors,
-                });
-            }
-
-            return Ok(new AuthSuccessResponse
-            {
-                Token = authResponse.Token,
-            });
+            return HandleAuthResponse(authResponse);
         }
 
         [HttpPost(ApiRoutes.Identity.Login)]
@@ -51,6 +41,19 @@ namespace TweetBook.Controllers.V1
         {
             var authResponse = await _identityService.LoginAsync(request.Email, request.Password);
 
+            return HandleAuthResponse(authResponse);
+        }
+
+        [HttpPost(ApiRoutes.Identity.Refresh)]
+        public async Task<IActionResult> Refresh([FromBody] RefreshTokenRequest request)
+        {
+            var authResponse = await _identityService.RefreshTokenAsync(request.Token, request.RefreshToken);
+
+            return HandleAuthResponse(authResponse);
+        }
+
+        private IActionResult HandleAuthResponse(AuthenticationResult authResponse)
+        {
             if (!authResponse.Success)
             {
                 return BadRequest(new AuthFailedResponse
@@ -62,6 +65,7 @@ namespace TweetBook.Controllers.V1
             return Ok(new AuthSuccessResponse
             {
                 Token = authResponse.Token,
+                RefreshToken = authResponse.RefreshToken,
             });
         }
     }
