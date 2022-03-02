@@ -1,0 +1,31 @@
+version: '3.5'
+
+networks:
+  localdev:
+   name: localdev
+
+services:
+ main-api:
+  build: TweetBook/
+  restart: always
+  ports:
+   - "7000:80"
+  depends_on:
+   - db-server
+  networks:
+   - localdev
+  environment:
+   - ASPNETCORE_ENVIRONMENT=Development
+
+ db-server:
+  image: mcr.microsoft.com/mssql/server:2019-latest
+  container_name: db-server
+  environment:
+   - ACCEPT_EULA=Y
+   - SA_PASSWORD=TESTpass!123
+   - MSSQL_PID=Developer
+   - TCP_PORT=1433
+  ports:
+   - "1400:1433"
+  networks:
+   - localdev
