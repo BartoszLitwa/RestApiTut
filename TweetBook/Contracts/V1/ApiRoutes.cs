@@ -20,5 +20,10 @@
             public const string Register = $"{Api}/identity/register";
             public const string Refresh = $"{Api}/identity/refresh";
         }
+
+        public static class Tags
+        {
+            public const string GetAll = $"{Api}/tags";
+        }
     }
 }

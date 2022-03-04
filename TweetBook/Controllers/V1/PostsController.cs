@@ -18,9 +18,11 @@ namespace TweetBook.Controllers.V1
     public class PostsController : Controller
     {
         private readonly IPostService _postService;
-        public PostsController(IPostService postService)
+        private readonly ITagService _tagService;
+        public PostsController(IPostService postService, ITagService tagService)
         {
             _postService = postService;
+            _tagService = tagService;
         }
 
         [HttpGet(ApiRoutes.Posts.GetAll)]
@@ -32,11 +34,14 @@ namespace TweetBook.Controllers.V1
         [HttpPost(ApiRoutes.Posts.Create)]
         public async Task<IActionResult> Create([FromBody] CreatePostRequest postRequest)
         {
+            var postId = Guid.NewGuid();
             var post = new Post
             {
+                Id = postId,
                 Title = postRequest.Title,
                 Content = postRequest.Content,
-                UserId = HttpContext.GetUserId()
+                UserId = HttpContext.GetUserId(),
+                Tags = postRequest.Tags.Select(t => new PostTag { PostId = postId, TagName = t }).ToList()
             };
 
             await _postService.CreatePostAsync(post);
@@ -55,10 +60,7 @@ namespace TweetBook.Controllers.V1
             // Return Only one elemetn
             var post = await _postService.GetPostByIdAsync(postId);
 
-            if (post == null)
-                return NotFound();
-
-            return Ok(post);
+            return post == null ? NotFound() : Ok(post);
         }
 
         [HttpPut(ApiRoutes.Posts.Update)]
@@ -75,10 +77,7 @@ namespace TweetBook.Controllers.V1
             post.Title = request.Title;
             post.Content = request.Content;
 
-            if (!await _postService.UpdatePostAsync(post))
-                return NotFound();
-
-            return Ok(post);
+            return !await _postService.UpdatePostAsync(post) ? NotFound() : Ok(post);
         }
 
         [HttpDelete(ApiRoutes.Posts.Delete)]
@@ -91,12 +90,7 @@ namespace TweetBook.Controllers.V1
                 return BadRequest(new { error = "You do not own this post" });
             }
 
-            var delete = await _postService.DeletePostAsync(postId);
-
-            if (delete)
-                return NoContent();
-
-            return NotFound();
+            return await _postService.DeletePostAsync(postId) ? NoContent() : NotFound();
         }
     }
 }

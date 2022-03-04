@@ -38,6 +38,11 @@ namespace TweetBook.Services
             return response.IsSuccess;
         }
 
+        public Task<List<Tag>> GetAllTagsAsync()
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<Post> GetPostByIdAsync(Guid id)
         {
             var post = await _cosmosStore.FindAsync(id.ToString(), id.ToString());

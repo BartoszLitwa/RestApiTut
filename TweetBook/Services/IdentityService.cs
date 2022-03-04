@@ -2,11 +2,13 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using TweetBook.Contracts.V1;
 using TweetBook.Data;
 using TweetBook.Domain;
 using TweetBook.Options;
@@ -71,8 +73,10 @@ namespace TweetBook.Services
                     }
                 };
 
+            var newUserId = Guid.NewGuid();
             var newUser = new IdentityUser
             {
+                Id = newUserId.ToString(),
                 Email = Email,
                 UserName = Email,
             };
@@ -84,6 +88,10 @@ namespace TweetBook.Services
                 {
                     Errors = createdUser.Errors.Select(x => x.Description),
                 };
+
+            // Add the Claim for Tags controller
+            await _userManager.AddClaimAsync(newUser, new Claim(PolicyClaims.Tags.Claim, PolicyClaims.Tags.Value));
+
             return await GenereateAuthenticationResultForUserAsync(newUser);
         }
 
@@ -91,15 +99,21 @@ namespace TweetBook.Services
         {
             var tokenHandler = new JwtSecurityTokenHandler();
 
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(new[]
+            var claims = new List<Claim>
                 {
                     new Claim(JwtRegisteredClaimNames.Sub, newUser.Email),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                     new Claim(JwtRegisteredClaimNames.Email, newUser.Email),
                     new Claim("id", newUser.Id),
-                }),
+                };
+
+            // Get previousle manually Added claims
+            var userClaims = await _userManager.GetClaimsAsync(newUser);
+            claims.AddRange(userClaims);
+
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(claims),
                 Expires = DateTime.UtcNow.Add(_jwtSettings.TokenLifeTime),
                 SigningCredentials = new SigningCredentials(
                     new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_jwtSettings.Secret)),

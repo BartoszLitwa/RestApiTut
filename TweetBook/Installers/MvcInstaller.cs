@@ -7,6 +7,7 @@ using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using TweetBook.Contracts.V1;
 using TweetBook.Options;
 using TweetBook.Services;
 
@@ -23,7 +24,11 @@ namespace TweetBook.Installers
 
             services.AddScoped<IIdentityService, IdentityService>();
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Latest);
+            services.AddMvc(options =>
+            {
+                options.EnableEndpointRouting = false;
+            });
+            // .SetCompatibilityVersion(CompatibilityVersion.Latest)
 
             var tokenValidationParameters = new TokenValidationParameters
             {
@@ -39,6 +44,7 @@ namespace TweetBook.Installers
 
             services.AddSingleton(tokenValidationParameters);
 
+            // Authentication for logging user in
             services.AddAuthentication(x =>
             {
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -49,6 +55,12 @@ namespace TweetBook.Installers
             {
                 x.SaveToken = true;
                 x.TokenValidationParameters = tokenValidationParameters;
+            });
+
+            // Authorization is for knowing which fuctions can user access
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy(PolicyClaims.Tags.TagViewer, builder => builder.RequireClaim("tags.view", "true"));
             });
 
             services.AddSwaggerGen(c =>

@@ -1,4 +1,7 @@
-﻿namespace TweetBook.Contracts.V1.Request
+﻿using System.Collections.Generic;
+using TweetBook.Domain;
+
+namespace TweetBook.Contracts.V1.Request
 {
     public class UpdatePostRequest
     {

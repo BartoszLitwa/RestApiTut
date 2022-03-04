@@ -1,12 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc.Testing;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Net.Http.Json;
-using System.Threading;
 using System.Threading.Tasks;
 using TweetBook.Contracts.V1;
 using TweetBook.Contracts.V1.Request;
@@ -15,9 +14,11 @@ using TweetBook.Data;
 
 namespace TweetBook.IntegrationTests
 {
-    public class IntegrationTest
+    public class IntegrationTest : IDisposable
     {
         protected readonly HttpClient TestClient;
+        private readonly IServiceProvider ServiceProvider;
+        private readonly string _dbName = Guid.NewGuid().ToString();
 
         protected IntegrationTest()
         {
@@ -26,23 +27,54 @@ namespace TweetBook.IntegrationTests
                 {
                     builder.ConfigureServices(services =>
                     {
-                        // Remove previous genuine databse 
-                        var descriptor = services.SingleOrDefault(d =>
-                            d.ServiceType == typeof(DbContextOptions<DataContext>));
+                        // Remove the app's ApplicationDbContext registration.
+                        var descriptor = services.SingleOrDefault(
+                            d => d.ServiceType == typeof(DbContextOptions<DataContext>));
 
-                        if(descriptor != null)
+                        if (descriptor != null)
+                        {
                             services.Remove(descriptor);
+                        }
 
-                        // Add new dummy database in memory for testing purposes
+                        // Add ApplicationDbContext using an in-memory database for testing.
                         services.AddDbContext<DataContext>(options =>
                         {
-                            options.UseInMemoryDatabase("TestDB");
+                            options.UseInMemoryDatabase(_dbName);
                         });
+
+                        // Build the service provider.
+                        var sp = services.BuildServiceProvider();
+
+                        // Create a scope to obtain a reference to the database context (ApplicationDbContext).
+                        using (var scope = sp.CreateScope())
+                        {
+                            var scopedServices = scope.ServiceProvider;
+                            var db = scopedServices.GetRequiredService<DataContext>();
+
+                            try
+                            {
+                                //db.Database.EnsureDeleted();  // feels hacky - don't think this is good practice, but does achieve my intention
+                                db.Database.EnsureCreated();
+                            }
+                            catch (Exception ex)
+                            {
+                                var a = ex.Message;
+                            }
+                        }
                     });
+
+
                 });
 
-
+            ServiceProvider = appFactory.Services;
             TestClient = appFactory.CreateClient();
+        }
+
+        public void Dispose()
+        {
+            //using var serviceScope = ServiceProvider.CreateScope();
+            //var context = serviceScope.ServiceProvider.GetRequiredService<DataContext>();
+            //context.Database.EnsureDeleted();
         }
 
         protected async Task AuthenticateAsync()
@@ -53,7 +85,7 @@ namespace TweetBook.IntegrationTests
         protected async Task<PostResponse> CreatePostAsync(CreatePostRequest request)
         {
             var response = await TestClient.PostAsJsonAsync(ApiRoutes.Posts.Create, request);
-            return await response.Content.ReadFromJsonAsync<PostResponse>();
+            return await response.Content.ReadAsAsync<PostResponse>();
         }
 
         private async Task<string> GetJwtAsync()
@@ -64,7 +96,7 @@ namespace TweetBook.IntegrationTests
                 Password = "Pass1234!"
             });
 
-            var registrationResponse = await response.Content.ReadFromJsonAsync<AuthSuccessResponse>();
+            var registrationResponse = await response.Content.ReadAsAsync<AuthSuccessResponse>();
 
             return registrationResponse.Token;
         }
