@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -10,6 +11,7 @@ using System.Collections.Generic;
 using System.Text;
 using TweetBook.Authorization;
 using TweetBook.Contracts.V1;
+using TweetBook.Filters;
 using TweetBook.Options;
 using TweetBook.Services;
 
@@ -26,11 +28,16 @@ namespace TweetBook.Installers
 
             services.AddScoped<IIdentityService, IdentityService>();
 
-            services.AddMvc(options =>
-            {
-                options.EnableEndpointRouting = false;
-            });
-            // .SetCompatibilityVersion(CompatibilityVersion.Latest)
+            services
+                .AddMvc(options =>
+                {
+                    options.EnableEndpointRouting = false;
+                    // Add our validation filter to mvc to initilize it
+                    options.Filters.Add<ValidationFilter>();
+                })
+                // Fluent Valdiation
+                .AddFluentValidation(conf => conf.RegisterValidatorsFromAssemblyContaining<Startup>());
+            //  .SetCompatibilityVersion(CompatibilityVersion.Latest);
 
             var tokenValidationParameters = new TokenValidationParameters
             {

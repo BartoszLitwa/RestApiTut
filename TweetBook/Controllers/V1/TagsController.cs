@@ -41,9 +41,14 @@ namespace TweetBook.Controllers.V1
             return tag == null ? NotFound() : Ok(_mapper.Map<TagResponse>(tag));
         }
 
-        [HttpPost(ApiRoutes.Tags.Post)]
-        public async Task<IActionResult> Post([FromBody] CreateTagRequest tagRequest)
+        [HttpPost(ApiRoutes.Tags.Create)]
+        public async Task<IActionResult> Create([FromBody] CreateTagRequest tagRequest)
         {
+            if (!ModelState.IsValid)
+            {
+
+            }
+
             var tag = new Tag
             {
                 Name = tagRequest.Name,
