@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,6 +8,7 @@ using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using TweetBook.Authorization;
 using TweetBook.Contracts.V1;
 using TweetBook.Options;
 using TweetBook.Services;
@@ -60,9 +62,18 @@ namespace TweetBook.Installers
             // Authorization is for knowing which fuctions can user access
             services.AddAuthorization(options =>
             {
-                options.AddPolicy(PolicyClaims.Tags.TagViewer, builder =>
+                // Authorization using claims
+                options.AddPolicy(PolicyClaims.Tags.PolicyName, builder =>
                     builder.RequireClaim(PolicyClaims.Tags.Claim, PolicyClaims.Tags.Value));
+
+                // Add a Policy for a Authorzation handler
+                options.AddPolicy(PolicyClaims.WorksForCompany.PolicyName, policy =>
+                {
+                    policy.AddRequirements(new WorksForCompanyRequirement(PolicyClaims.WorksForCompany.Value));
+                });
             });
+
+            services.AddSingleton<IAuthorizationHandler, WorksForCompanyHandler>();
 
             services.AddSwaggerGen(c =>
             {

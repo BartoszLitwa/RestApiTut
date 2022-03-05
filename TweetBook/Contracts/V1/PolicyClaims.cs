@@ -6,9 +6,16 @@
 
         public static class Tags
         {
-            public const string TagViewer = $"{Policy}.TagViewer";
+            public const string PolicyName = $"{Policy}.TagViewer";
             public const string Claim = "tags.view";
             public const string Value = "true";
+        }
+
+        public static class WorksForCompany
+        {
+            public const string PolicyName = $"{Policy}.WorksForCompany";
+            public const string Claim = "gmail.com";
+            public const string Value = "gmail.com";
         }
     }
 }

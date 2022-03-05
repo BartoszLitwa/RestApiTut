@@ -23,7 +23,7 @@ namespace TweetBook.Controllers.V1
         }
 
         [HttpGet(ApiRoutes.Tags.GetAll)]
-        [Authorize(Policy = PolicyClaims.Tags.TagViewer)]
+        [Authorize(Policy = PolicyClaims.Tags.PolicyName)]
         public async Task<IActionResult> GetAll()
         {
             var tags = await _tagService.GetAllAsync();
@@ -61,7 +61,7 @@ namespace TweetBook.Controllers.V1
         }
 
         [HttpDelete(ApiRoutes.Tags.Delete)]
-        [Authorize(Roles = $"{Roles.Admin}")]
+        [Authorize(Policy = PolicyClaims.WorksForCompany.PolicyName)]
         public async Task<IActionResult> Delete([FromRoute] string tagName)
         {
             var tag = await _tagService.DeleteTagAsync(tagName);
