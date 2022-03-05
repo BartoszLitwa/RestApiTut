@@ -21,6 +21,7 @@ namespace TweetBook.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+
             builder.Entity<PostTag>().Ignore(i => i.Post).HasKey(i => new {i.PostId, i.TagName});
         }
     }

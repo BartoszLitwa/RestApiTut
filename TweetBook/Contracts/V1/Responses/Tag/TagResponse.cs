@@ -2,6 +2,6 @@
 {
     public class TagResponse
     {
-        public string TagName { get; set; }
+        public string Name { get; set; }
     }
 }
