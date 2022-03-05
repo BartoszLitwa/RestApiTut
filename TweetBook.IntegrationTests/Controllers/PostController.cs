@@ -1,12 +1,12 @@
 ﻿using FluentAssertions;
+using System.Collections.Generic;
 using System.Net;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
 using TweetBook.Contracts.V1;
-using System.Net.Http.Json;
-using System.Collections.Generic;
-using TweetBook.Domain;
+using TweetBook.Contracts.V1.Request.Post;
+using TweetBook.Domain.Posts;
 using Xunit;
-using TweetBook.Contracts.V1.Request;
 
 namespace TweetBook.IntegrationTests.Controllers
 {

@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc.Testing;
+﻿using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -8,8 +7,10 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using TweetBook.Contracts.V1;
-using TweetBook.Contracts.V1.Request;
-using TweetBook.Contracts.V1.Responses;
+using TweetBook.Contracts.V1.Request.Auth;
+using TweetBook.Contracts.V1.Request.Post;
+using TweetBook.Contracts.V1.Responses.Auth;
+using TweetBook.Contracts.V1.Responses.Post;
 using TweetBook.Data;
 
 namespace TweetBook.IntegrationTests

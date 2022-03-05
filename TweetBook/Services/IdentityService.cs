@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TweetBook.Contracts.V1;
 using TweetBook.Data;
-using TweetBook.Domain;
+using TweetBook.Domain.Auth;
 using TweetBook.Options;
 
 namespace TweetBook.Services

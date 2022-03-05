@@ -3,7 +3,7 @@ using Cosmonaut.Extensions.Microsoft.DependencyInjection;
 using Microsoft.Azure.Documents.Client;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using TweetBook.Domain;
+using TweetBook.Domain.Posts;
 
 namespace TweetBook.Installers
 {

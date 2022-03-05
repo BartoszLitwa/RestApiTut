@@ -1,7 +1,7 @@
 ﻿using Cosmonaut.Attributes;
 using Newtonsoft.Json;
 
-namespace TweetBook.Domain
+namespace TweetBook.Domain.Posts
 {
     [CosmosCollection("posts")]
     public class CosmosPostDto

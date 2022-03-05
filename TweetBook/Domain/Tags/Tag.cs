@@ -3,7 +3,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace TweetBook.Domain
+namespace TweetBook.Domain.Tags
 {
     public class Tag
     {

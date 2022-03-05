@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using TweetBook.Contracts.V1;
 using TweetBook.Contracts.V1.Request.Tag;
 using TweetBook.Contracts.V1.Responses.Tag;
-using TweetBook.Domain;
+using TweetBook.Domain.Tags;
 using TweetBook.Extensions;
 using TweetBook.Services;
 

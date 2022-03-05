@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using TweetBook.Domain;
+using TweetBook.Domain.Auth;
 
 namespace TweetBook.Services
 {

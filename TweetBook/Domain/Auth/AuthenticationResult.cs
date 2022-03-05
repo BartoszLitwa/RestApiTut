@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace TweetBook.Domain
+namespace TweetBook.Domain.Auth
 {
     public class AuthenticationResult
     {

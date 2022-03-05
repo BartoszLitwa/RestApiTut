@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using TweetBook.Contracts.V1;
 using TweetBook.Contracts.V1.Request.Auth;
 using TweetBook.Contracts.V1.Responses.Auth;
-using TweetBook.Domain;
+using TweetBook.Domain.Auth;
 using TweetBook.Services;
 
 namespace TweetBook.Controllers.V1

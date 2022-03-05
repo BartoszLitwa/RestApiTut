@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using TweetBook.Domain;
+using TweetBook.Domain.Posts;
+using TweetBook.Domain.Tags;
 
 namespace TweetBook.Services
 {

@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using TweetBook.Domain;
+using TweetBook.Domain.Auth;
+using TweetBook.Domain.Posts;
+using TweetBook.Domain.Tags;
 
 namespace TweetBook.Data
 {
