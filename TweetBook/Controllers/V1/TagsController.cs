@@ -21,7 +21,8 @@ namespace TweetBook.Controllers.V1
         [Authorize(Policy = PolicyClaims.Tags.TagViewer)]
         public async Task<IActionResult> GetAll()
         {
-            return Ok(await _postService.GetAllTagsAsync());
+            var tags = await _postService.GetAllTagsAsync();
+            return Ok(tags);
         }
     }
 }

@@ -13,13 +13,19 @@ namespace TweetBook.Installers
         {
             services.AddDbContext<DataContext>(options =>
                 options.UseSqlServer(
-                    configuration.GetConnectionString("DefaultConnection")));
+                    #if DEBUG
+                        configuration.GetConnectionString("OldConnection"))
+                    #else
+                        configuration.GetConnectionString("DefaultConnection"))
+                    #endif
+                );
 
             services.AddDatabaseDeveloperPageExceptionFilter();
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<DataContext>();
 
             services.AddScoped<IPostService, PostService>();
+            services.AddScoped<ITagService, TagService>();
             //services.AddSingleton<IPostService, CosmosPostService>();
         }
     }

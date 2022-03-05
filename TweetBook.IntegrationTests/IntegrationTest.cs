@@ -39,13 +39,13 @@ namespace TweetBook.IntegrationTests
                         // Add ApplicationDbContext using an in-memory database for testing.
                         services.AddDbContext<DataContext>(options =>
                         {
-                            options.UseInMemoryDatabase(_dbName);
+                            options.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=TweetbookTest;Trusted_Connection=True;MultipleActiveResultSets=true");
                         });
 
                         // Build the service provider.
                         var sp = services.BuildServiceProvider();
 
-                        // Create a scope to obtain a reference to the database context (ApplicationDbContext).
+                        // Create a scope to obtain a reference to the database context (DataContext).
                         using (var scope = sp.CreateScope())
                         {
                             var scopedServices = scope.ServiceProvider;
@@ -72,9 +72,9 @@ namespace TweetBook.IntegrationTests
 
         public void Dispose()
         {
-            //using var serviceScope = ServiceProvider.CreateScope();
-            //var context = serviceScope.ServiceProvider.GetRequiredService<DataContext>();
-            //context.Database.EnsureDeleted();
+            using var serviceScope = ServiceProvider.CreateScope();
+            var context = serviceScope.ServiceProvider.GetRequiredService<DataContext>();
+            context.Database.EnsureDeleted();
         }
 
         protected async Task AuthenticateAsync()

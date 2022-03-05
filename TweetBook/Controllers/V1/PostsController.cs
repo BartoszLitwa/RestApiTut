@@ -34,14 +34,14 @@ namespace TweetBook.Controllers.V1
         [HttpPost(ApiRoutes.Posts.Create)]
         public async Task<IActionResult> Create([FromBody] CreatePostRequest postRequest)
         {
-            var postId = Guid.NewGuid();
+            var newPostId = Guid.NewGuid();
             var post = new Post
             {
-                Id = postId,
+                Id = newPostId,
                 Title = postRequest.Title,
                 Content = postRequest.Content,
                 UserId = HttpContext.GetUserId(),
-                Tags = postRequest.Tags.Select(t => new PostTag { PostId = postId, TagName = t }).ToList()
+                Tags = postRequest.Tags.Select(t => new PostTag { PostId = newPostId, TagName = t }).ToList()
             };
 
             await _postService.CreatePostAsync(post);

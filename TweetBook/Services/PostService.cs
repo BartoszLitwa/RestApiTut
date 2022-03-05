@@ -11,38 +11,39 @@ namespace TweetBook.Services
     public class PostService : IPostService
     {
         private readonly DataContext _dataContext;
+        private readonly ITagService _tagService;
 
-        public PostService(DataContext dataContext)
+        public PostService(DataContext dataContext, ITagService tagService)
         {
             _dataContext = dataContext;
+            _tagService = tagService;
         }
 
         public async Task<bool> CreatePostAsync(Post post)
         {
             await _dataContext.Posts.AddAsync(post);
 
-            var created = await _dataContext.SaveChangesAsync();
+            await _tagService.AddTagsFromPostAsync(post);
 
-            return created > 0;
+            return await _dataContext.SaveChangesAsync() > 0;
         }
 
         public async Task<Post> GetPostByIdAsync(Guid id)
         {
-            return await _dataContext.Posts.SingleOrDefaultAsync(x => x.Id == id);
+            return await _dataContext.Posts.Include(p => p.Tags)
+                .FirstOrDefaultAsync(p => p.Id == id);
         }
 
         public async Task<List<Post>> GetPostsAsync()
         {
-            return await _dataContext.Posts.ToListAsync();
+            return await _dataContext.Posts.Include(p => p.Tags).ToListAsync();
         }
 
         public async Task<bool> UpdatePostAsync(Post postToUpdate)
         {
             _dataContext.Posts.Update(postToUpdate);
 
-            var updated = await _dataContext.SaveChangesAsync();
-
-            return updated > 0;
+            return await _dataContext.SaveChangesAsync() > 0;
         }
 
         public async Task<bool> DeletePostAsync(Guid postId)
@@ -53,9 +54,8 @@ namespace TweetBook.Services
                 return false;
 
             _dataContext.Posts.Remove(post);
-            var deleted = await _dataContext.SaveChangesAsync();
-
-            return deleted > 0;
+            
+            return await _dataContext.SaveChangesAsync() > 0;
         }
 
         public async Task<bool> UserOwnsPostAsync(Guid postId, string userId)

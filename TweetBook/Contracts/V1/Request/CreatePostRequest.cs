@@ -12,7 +12,7 @@ namespace TweetBook.Contracts.V1.Request
 
         public CreatePostRequest()
         {
-            Tags = Array.Empty<string>();
+            Tags = new string[0];
         }
     }
 }
