@@ -10,6 +10,6 @@ namespace TweetBook.Services
         Task<List<Tag>> GetAllAsync();
         Task<Tag> GetTagByNameAsync(string requestName);
         Task<bool> CreateAsync(Tag tag);
-        Task<bool> RemoveTagAsync(Tag tag);
+        Task<bool> DeleteTagAsync(string tagName);
     }
 }

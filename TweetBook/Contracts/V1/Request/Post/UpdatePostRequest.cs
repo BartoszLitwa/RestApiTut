@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using TweetBook.Domain;
 
-namespace TweetBook.Contracts.V1.Request
+namespace TweetBook.Contracts.V1.Request.Post
 {
     public class UpdatePostRequest
     {

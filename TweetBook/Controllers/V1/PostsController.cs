@@ -2,12 +2,11 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TweetBook.Contracts.V1;
-using TweetBook.Contracts.V1.Request;
-using TweetBook.Contracts.V1.Responses;
+using TweetBook.Contracts.V1.Request.Post;
+using TweetBook.Contracts.V1.Responses.Post;
 using TweetBook.Domain;
 using TweetBook.Extensions;
 using TweetBook.Services;

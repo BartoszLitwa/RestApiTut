@@ -46,9 +46,13 @@ namespace TweetBook.Services
             return await _dataContext.Tags.FirstOrDefaultAsync(x => x.Name == requestName);
         }
 
-        public async Task<bool> RemoveTagAsync(Tag tag)
+        public async Task<bool> DeleteTagAsync(string tagName)
         {
-            _dataContext.Tags.Remove(tag);
+            var tag = await _dataContext.Tags.FirstOrDefaultAsync(x => x.Name == tagName);
+
+            if (tag != null)
+                _dataContext.Tags.Remove(tag);
+
             return await _dataContext.SaveChangesAsync() > 0;
         }
     }

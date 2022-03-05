@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace TweetBook.Contracts.V1.Request
+namespace TweetBook.Contracts.V1.Request.Auth
 {
     public class UserRegistrationRequest
     {

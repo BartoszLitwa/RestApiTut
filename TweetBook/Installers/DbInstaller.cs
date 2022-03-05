@@ -15,13 +15,14 @@ namespace TweetBook.Installers
                 options.UseSqlServer(
                     #if DEBUG
                         configuration.GetConnectionString("OldConnection"))
-                    #else
+                    #else // RELEASE
                         configuration.GetConnectionString("DefaultConnection"))
                     #endif
                 );
 
             services.AddDatabaseDeveloperPageExceptionFilter();
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<DataContext>();
 
             services.AddScoped<IPostService, PostService>();

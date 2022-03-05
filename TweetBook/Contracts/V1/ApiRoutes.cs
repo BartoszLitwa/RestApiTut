@@ -24,6 +24,9 @@
         public static class Tags
         {
             public const string GetAll = $"{Api}/tags";
+            public const string Get = $"{Api}/tags/{{tagName}}";
+            public const string Post = $"{Api}/tags";
+            public const string Delete = $"{Api}/tags/{{tagName}}";
         }
     }
 }

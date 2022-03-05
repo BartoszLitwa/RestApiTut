@@ -1,10 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 using System.Threading.Tasks;
 using TweetBook.Contracts.V1;
-using TweetBook.Contracts.V1.Request;
-using TweetBook.Contracts.V1.Responses;
+using TweetBook.Contracts.V1.Request.Auth;
+using TweetBook.Contracts.V1.Responses.Auth;
 using TweetBook.Domain;
 using TweetBook.Services;
 

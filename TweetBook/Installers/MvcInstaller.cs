@@ -60,7 +60,8 @@ namespace TweetBook.Installers
             // Authorization is for knowing which fuctions can user access
             services.AddAuthorization(options =>
             {
-                options.AddPolicy(PolicyClaims.Tags.TagViewer, builder => builder.RequireClaim("tags.view", "true"));
+                options.AddPolicy(PolicyClaims.Tags.TagViewer, builder =>
+                    builder.RequireClaim(PolicyClaims.Tags.Claim, PolicyClaims.Tags.Value));
             });
 
             services.AddSwaggerGen(c =>

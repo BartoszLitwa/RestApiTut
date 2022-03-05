@@ -21,14 +21,17 @@ namespace TweetBook.Services
         private readonly JwtSettings _jwtSettings;
         private readonly TokenValidationParameters _tokenValidationParameters;
         private readonly DataContext _dataContext;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
         public IdentityService(UserManager<IdentityUser> userManager, JwtSettings jwtSettings,
-            TokenValidationParameters tokenValidationParameters, DataContext dataContext)
+            TokenValidationParameters tokenValidationParameters, DataContext dataContext,
+            RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
             _jwtSettings = jwtSettings;
             _tokenValidationParameters = tokenValidationParameters;
             _dataContext = dataContext;
+            _roleManager = roleManager;
         }
 
         public async Task<AuthenticationResult> LoginAsync(string email, string password)
@@ -106,6 +109,32 @@ namespace TweetBook.Services
                     new Claim(JwtRegisteredClaimNames.Email, newUser.Email),
                     new Claim("id", newUser.Id),
                 };
+
+            // Add All Roles possesed by the user
+            var userRoles = await _userManager.GetRolesAsync(newUser);
+
+            foreach (var role in userRoles)
+            {
+                // Add as a Claim the name of the role , eg. Admin, Poster
+                claims.Add(new Claim(ClaimTypes.Role, role));
+
+                // Check if the role exists
+                var identityRole = await _roleManager.FindByNameAsync(role);
+                if (identityRole == null)
+                    continue;
+
+                // Find all claims that this role has
+                var roleClaims = await _roleManager.GetClaimsAsync(identityRole);
+
+                // Add every role Claim to user Claims
+                foreach(var roleClaim in roleClaims)
+                {
+                    if (claims.Contains(roleClaim))
+                        continue;
+
+                    claims.Add(roleClaim);
+                }
+            }
 
             // Get previousle manually Added claims
             var userClaims = await _userManager.GetClaimsAsync(newUser);

@@ -65,10 +65,5 @@ namespace TweetBook.Services
                 .AsNoTracking()
                 .AnyAsync(x => x.Id == postId && x.UserId == userId);
         }
-
-        public async Task<List<Tag>> GetAllTagsAsync()
-        {
-            return await _dataContext.Tags.ToListAsync();
-        }
     }
 }
