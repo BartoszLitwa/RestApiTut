@@ -17,7 +17,7 @@ namespace TweetBook.Controllers.V1
 {
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = $"{Roles.Admin},{Roles.Poster}")]
     [Produces("application/json")]
-    public class TagsController : Controller
+    public class TagsController : ControllerBase
     {
         private readonly ITagService _tagService;
         private readonly IMapper _mapper;
