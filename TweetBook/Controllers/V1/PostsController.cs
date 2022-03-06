@@ -6,12 +6,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TweetBook.Cache;
 using TweetBook.Contracts.V1;
 using TweetBook.Contracts.V1.Request.Post;
+using TweetBook.Contracts.V1.Responses.Pagination;
 using TweetBook.Contracts.V1.Responses.Post;
+using TweetBook.Contracts.V1.Responses.Queries;
+using TweetBook.Domain.Pagination;
 using TweetBook.Domain.Posts;
 using TweetBook.Domain.Tags;
 using TweetBook.Extensions;
+using TweetBook.Helpers;
 using TweetBook.Services;
 
 namespace TweetBook.Controllers.V1
@@ -21,19 +26,44 @@ namespace TweetBook.Controllers.V1
     {
         private readonly IPostService _postService;
         private readonly IMapper _mapper;
+        private readonly IUriService _uriService;
 
-        public PostsController(IPostService postService, IMapper mapper)
+        public PostsController(IPostService postService, IMapper mapper, IUriService uriService)
         {
             _postService = postService;
             _mapper = mapper;
+            _uriService = uriService;
         }
 
         [HttpGet(ApiRoutes.Posts.GetAll)]
-        public async Task<IActionResult> GetAll()
+        [Cached(600)]
+        public async Task<IActionResult> GetAll([FromQuery] PaginationQuery paginationQuery)
         {
-            var posts = await _postService.GetPostsAsync();
+            var pagination = _mapper.Map<PaginationFilter>(paginationQuery);
 
-            return Ok(_mapper.Map<List<PostResponse>>(posts));
+            // Returns only needed number of elements thanks to pagination
+            var posts = await _postService.GetPostsAsync(pagination);
+            var postResponses = _mapper.Map<List<PostResponse>>(posts);
+
+            // PageNumber starts from 0
+            if (pagination == null || pagination.PageSize < PaginationQuery.MinPageSize || pagination.PageNumber < PaginationQuery.StartingPageNumber)
+            {
+                return Ok(new PagedResponse<PostResponse>(postResponses));
+            }
+
+            var paginationResponse = PaginationHelpers.CreatePaginatedResponse(_uriService, pagination, postResponses);
+
+            return Ok(paginationResponse);
+        }
+
+        [HttpGet(ApiRoutes.Posts.Get)]
+        [Cached(600)]
+        public async Task<IActionResult> Get([FromRoute] Guid postId)
+        {
+            // Return Only one element
+            var post = await _postService.GetPostByIdAsync(postId);
+
+            return post == null ? NotFound() : Ok(new Response<PostResponse>(_mapper.Map<PostResponse>(post)));
         }
 
         [HttpPost(ApiRoutes.Posts.Create)]
@@ -51,19 +81,11 @@ namespace TweetBook.Controllers.V1
 
             await _postService.CreatePostAsync(post);
 
-            var baseUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host.ToUriComponent()}";
-            var location = $"{baseUrl}/{ApiRoutes.Posts.Get.Replace("{postId}", post.Id.ToString())}";
+            //var baseUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host.ToUriComponent()}";
+            //var location = $"{baseUrl}/{ApiRoutes.Posts.Get.Replace("{postId}", post.Id.ToString())}";
+            var location = _uriService.GetPostUri(post.Id.ToString());
 
-            return Created(location, _mapper.Map<PostResponse>(post));
-        }
-
-        [HttpGet(ApiRoutes.Posts.Get)]
-        public async Task<IActionResult> Get([FromRoute] Guid postId)
-        {
-            // Return Only one element
-            var post = await _postService.GetPostByIdAsync(postId);
-
-            return post == null ? NotFound() : Ok(_mapper.Map<PostResponse>(post));
+            return Created(location, new Response<PostResponse>(_mapper.Map<PostResponse>(post)));
         }
 
         [HttpPut(ApiRoutes.Posts.Update)]
@@ -80,7 +102,7 @@ namespace TweetBook.Controllers.V1
             post.Title = request.Title;
             post.Content = request.Content;
 
-            return await _postService.UpdatePostAsync(post) ? Ok(_mapper.Map<PostResponse>(post)) : NotFound();
+            return await _postService.UpdatePostAsync(post) ? Ok(new Response<PostResponse>(_mapper.Map<PostResponse>(post))) : NotFound();
         }
 
         [HttpDelete(ApiRoutes.Posts.Delete)]
@@ -94,6 +116,11 @@ namespace TweetBook.Controllers.V1
             }
 
             return await _postService.DeletePostAsync(postId) ? NoContent() : NotFound();
+        }
+
+        private Response<T> Map<T>(object data)
+        {
+            return new Response<T>(_mapper.Map<T>(data));
         }
     }
 }

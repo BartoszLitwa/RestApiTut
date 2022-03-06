@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TweetBook.Domain.Pagination;
 using TweetBook.Domain.Posts;
 
 namespace TweetBook.Services
@@ -45,7 +46,7 @@ namespace TweetBook.Services
             return post == null ? null : new Post { Id = Guid.Parse(post.Id), Title = post.Title, Content = post.Content };
         }
 
-        public async Task<List<Post>> GetPostsAsync()
+        public async Task<List<Post>> GetPostsAsync(PaginationFilter paginationFilter = null)
         {
             var posts = await _cosmosStore.Query().ToListAsync();
 

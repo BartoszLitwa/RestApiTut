@@ -14,8 +14,9 @@ services:
    - db-server
   networks:
    - localdev
+   - redis
   environment:
-   - ASPNETCORE_ENVIRONMENT=Development
+   - ASPNETCORE_ENVIRONMENT=RELEASE
 
  db-server:
   image: mcr.microsoft.com/mssql/server:2019-latest
@@ -29,3 +30,9 @@ services:
    - "1400:1433"
   networks:
    - localdev
+
+ redis:
+  image: redis
+  container_name: redis
+  ports:
+    - "6379:6379"
