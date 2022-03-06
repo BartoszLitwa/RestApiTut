@@ -46,7 +46,7 @@ namespace TweetBook.Services
             return post == null ? null : new Post { Id = Guid.Parse(post.Id), Title = post.Title, Content = post.Content };
         }
 
-        public async Task<List<Post>> GetPostsAsync(PaginationFilter paginationFilter = null)
+        public async Task<List<Post>> GetPostsAsync(GetAllPostFilter filter = null, PaginationFilter paginationFilter = null)
         {
             var posts = await _cosmosStore.Query().ToListAsync();
 
