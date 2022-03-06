@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using TweetBook.Contracts.V1.Responses.Tag;
-using TweetBook.Domain.Tags;
+﻿using TweetBook.Contracts.V1.Responses.Tag;
 
 namespace TweetBook.Contracts.V1.Responses.Post
 {
